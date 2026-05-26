@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Diary — Diário de Sessões</title>
+    <meta name="description" content="Diário de poker profissional para tracking de sessões, emoções, disciplina e revisão semanal.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-effects">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">♠</span>
+                <span class="logo-text">Poker<span class="logo-accent">Diary</span></span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">
+                <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="new-session" id="nav-new-session">
+                <span class="nav-icon">➕</span><span class="nav-label">Nova Sessão</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="sessions" id="nav-sessions">
+                <span class="nav-icon">📋</span><span class="nav-label">Sessões</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="weekly" id="nav-weekly">
+                <span class="nav-icon">📅</span><span class="nav-label">Revisão Semanal</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="bankroll" id="nav-bankroll">
+                <span class="nav-icon">💰</span><span class="nav-label">Bankroll</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="settings" id="nav-settings">
+                <span class="nav-icon">⚙️</span><span class="nav-label">Configurações</span>
+            </a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="bankroll-mini" id="bankroll-mini">
+                <span class="bankroll-label">Bankroll</span>
+                <span class="bankroll-value" id="sidebar-bankroll">$0.00</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header" id="mobile-header">
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+        <span class="mobile-title">♠ PokerDiary</span>
+        <span class="mobile-bankroll" id="mobile-bankroll">$0.00</span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+
+        <!-- ==================== DASHBOARD ==================== -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p class="page-subtitle">Visão geral do seu jogo</p>
+            </div>
+
+            <div class="stats-grid" id="dashboard-stats">
+                <div class="stat-card stat-primary">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-profit">$0.00</span>
+                        <span class="stat-label">Lucro Total</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-secondary">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-sessions">0</span>
+                        <span class="stat-label">Sessões Jogadas</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-accent">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-hours">0h</span>
+                        <span class="stat-label">Horas Jogadas</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-warning">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-winrate">$0/h</span>
+                        <span class="stat-label">Win Rate $/h</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card chart-card">
+                    <h3 class="card-title">📈 Evolução do Bankroll</h3>
+                    <canvas id="bankroll-chart"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">🔥 Últimas Sessões</h3>
+                    <div class="recent-sessions" id="recent-sessions">
+                        <p class="empty-state">Nenhuma sessão registrada ainda.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">🧠 Disciplina (Últimas 10)</h3>
+                    <div class="discipline-stats" id="discipline-stats">
+                        <div class="discipline-row">
+                            <span>Limp dado</span>
+                            <div class="discipline-bar"><div class="discipline-fill" id="disc-limp" style="width:0%"></div></div>
+                            <span class="discipline-pct" id="disc-limp-pct">0%</span>
+                        </div>
+                        <div class="discipline-row">
+                            <span>Raise s/ plano</span>
+                            <div class="discipline-bar"><div class="discipline-fill bad" id="disc-raise" style="width:0%"></div></div>
+                            <span class="discipline-pct" id="disc-raise-pct">0%</span>
+                        </div>
+                        <div class="discipline-row">
+                            <span>Posição respeitada</span>
+                            <div class="discipline-bar"><div class="discipline-fill good" id="disc-position" style="width:0%"></div></div>
+                            <span class="discipline-pct" id="disc-position-pct">0%</span>
+                        </div>
+                        <div class="discipline-row">
+                            <span>Hero call ruim</span>
+                            <div class="discipline-bar"><div class="discipline-fill bad" id="disc-hero" style="width:0%"></div></div>
+                            <span class="discipline-pct" id="disc-hero-pct">0%</span>
+                        </div>
+                        <div class="discipline-row">
+                            <span>Stop loss respeitado</span>
+                            <div class="discipline-bar"><div class="discipline-fill good" id="disc-stoploss" style="width:0%"></div></div>
+                            <span class="discipline-pct" id="disc-stoploss-pct">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">😤 Tilt Tracker</h3>
+                    <div class="tilt-stats" id="tilt-stats">
+                        <div class="tilt-ring">
+                            <svg viewBox="0 0 100 100" class="tilt-svg">
+                                <circle cx="50" cy="50" r="42" class="tilt-bg"/>
+                                <circle cx="50" cy="50" r="42" class="tilt-fill" id="tilt-circle"/>
+                            </svg>
+                            <div class="tilt-center">
+                                <span class="tilt-pct" id="tilt-pct">0%</span>
+                                <span class="tilt-label">com tilt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== NEW SESSION ==================== -->
+        <section class="page" id="page-new-session">
+            <div class="page-header">
+                <h1>Nova Sessão</h1>
+                <p class="page-subtitle">Registre sua sessão de poker</p>
+            </div>
+
+            <form id="session-form" class="session-form">
+                <!-- Contexto -->
+                <div class="form-section">
+                    <h2 class="section-title"><span class="section-icon">🎰</span> Contexto</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="session-date">Data</label>
+                            <input type="date" id="session-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-limit">Limite</label>
+                            <select id="session-limit">
+                                <option value="NL2">NL2</option>
+                                <option value="NL5">NL5</option>
+                                <option value="NL10">NL10</option>
+                                <option value="NL25">NL25</option>
+                                <option value="NL50">NL50</option>
+                                <option value="NL100">NL100</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-format">Formato</label>
+                            <select id="session-format">
+                                <option value="Cash Game 6-max">Cash Game 6-max</option>
+                                <option value="Cash Game 9-max">Cash Game 9-max</option>
+                                <option value="Zoom/Fast">Zoom/Fast</option>
+                                <option value="Torneio MTT">Torneio MTT</option>
+                                <option value="Sit & Go">Sit & Go</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-time">Tempo jogado (min)</label>
+                            <input type="number" id="session-time" min="0" placeholder="60">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-tables">Nº de Mesas</label>
+                            <input type="number" id="session-tables" min="1" max="24" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-buyin-initial">Banca Inicial ($)</label>
+                            <input type="number" id="session-buyin-initial" step="0.01" placeholder="200.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-buyin-final">Banca Final ($)</label>
+                            <input type="number" id="session-buyin-final" step="0.01" placeholder="210.00">
+                        </div>
+                    </div>
+                    <div class="result-preview" id="result-preview">
+                        <span class="result-label">Resultado:</span>
+                        <span class="result-value" id="result-value">$0.00</span>
+                        <span class="result-buyins" id="result-buyins">(0 buy-ins)</span>
+                    </div>
+                </div>
+
+                <!-- Estado Emocional -->
+                <div class="form-section">
+                    <h2 class="section-title"><span class="section-icon">🧠</span> Estado Emocional</h2>
+                    <div class="form-grid">
+                        <div class="form-group slider-group">
+                            <label>Energia antes: <span class="slider-val" id="energy-val">5</span>/10</label>
+                            <input type="range" id="session-energy" min="0" max="10" value="5" class="slider">
+                        </div>
+                        <div class="form-group slider-group">
+                            <label>Foco antes: <span class="slider-val" id="focus-val">5</span>/10</label>
+                            <input type="range" id="session-focus" min="0" max="10" value="5" class="slider">
+                        </div>
+                        <div class="form-group slider-group">
+                            <label>Humor antes: <span class="slider-val" id="mood-val">5</span>/10</label>
+                            <input type="range" id="session-mood" min="0" max="10" value="5" class="slider">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-state-after">Estado depois</label>
+                            <select id="session-state-after">
+                                <option value="Ótimo">😊 Ótimo</option>
+                                <option value="Bem">🙂 Bem</option>
+                                <option value="Neutro" selected>😐 Neutro</option>
+                                <option value="Mal">😟 Mal</option>
+                                <option value="Péssimo">😡 Péssimo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-tilt">Senti tilt?</label>
+                            <div class="toggle-group">
+                                <label class="toggle"><input type="checkbox" id="session-tilt"><span class="toggle-slider"></span></label>
+                                <span class="toggle-label" id="tilt-label">Não</span>
+                            </div>
+                        </div>
+                        <div class="form-group" id="tilt-type-group" style="display:none;">
+                            <label for="session-tilt-type">Tipo de tilt</label>
+                            <select id="session-tilt-type">
+                                <option value="Injustiça">Injustiça (bad beat)</option>
+                                <option value="Frustração">Frustração (downswing)</option>
+                                <option value="Entediado">Entediado</option>
+                                <option value="Ganância">Ganância (winner's tilt)</option>
+                                <option value="Vingança">Vingança</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disciplina -->
+                <div class="form-section">
+                    <h2 class="section-title"><span class="section-icon">📏</span> Disciplina</h2>
+                    <div class="discipline-checks">
+                        <label class="check-item bad-check">
+                            <input type="checkbox" id="disc-gave-limp">
+                            <span class="check-box"></span>
+                            <span>Dei limp</span>
+                        </label>
+                        <label class="check-item bad-check">
+                            <input type="checkbox" id="disc-paid-raise">
+                            <span class="check-box"></span>
+                            <span>Paguei raise sem plano</span>
+                        </label>
+                        <label class="check-item good-check">
+                            <input type="checkbox" id="disc-respected-position" checked>
+                            <span class="check-box"></span>
+                            <span>Respeitei posição</span>
+                        </label>
+                        <label class="check-item bad-check">
+                            <input type="checkbox" id="disc-hero-call">
+                            <span class="check-box"></span>
+                            <span>Fiz hero call duvidoso</span>
+                        </label>
+                        <label class="check-item good-check">
+                            <input type="checkbox" id="disc-stop-loss" checked>
+                            <span class="check-box"></span>
+                            <span>Respeitei stop loss</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Mãos Marcadas -->
+                <div class="form-section">
+                    <h2 class="section-title"><span class="section-icon">🃏</span> Mãos Marcadas</h2>
+                    <div id="hands-container">
+                        <!-- Hands added dynamically -->
+                    </div>
+                    <button type="button" class="btn btn-outline" id="add-hand-btn">+ Adicionar Mão</button>
+                </div>
+
+                <!-- Revisão -->
+                <div class="form-section">
+                    <h2 class="section-title"><span class="section-icon">📝</span> Revisão</h2>
+                    <div class="form-grid-full">
+                        <div class="form-group">
+                            <label for="review-best">Melhor decisão</label>
+                            <textarea id="review-best" rows="2" placeholder="Descreva sua melhor jogada da sessão..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-worst">Pior decisão</label>
+                            <textarea id="review-worst" rows="2" placeholder="Descreva sua pior jogada..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-error">Erro principal</label>
+                            <textarea id="review-error" rows="2" placeholder="Qual foi o principal erro?"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-lesson">Lição do dia</label>
+                            <textarea id="review-lesson" rows="2" placeholder="O que você aprendeu hoje?"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-rule">Regra para próxima sessão</label>
+                            <textarea id="review-rule" rows="2" placeholder="Qual regra vai seguir na próxima?"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg" id="save-session-btn">
+                        <span>💾</span> Salvar Sessão
+                    </button>
+                    <button type="reset" class="btn btn-ghost btn-lg">Limpar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ==================== SESSIONS LIST ==================== -->
+        <section class="page" id="page-sessions">
+            <div class="page-header">
+                <h1>Sessões</h1>
+                <p class="page-subtitle">Histórico completo de sessões</p>
+            </div>
+            <div class="sessions-filters">
+                <input type="text" id="session-search" placeholder="🔍 Buscar sessões..." class="search-input">
+                <select id="session-filter-limit" class="filter-select">
+                    <option value="">Todos os limites</option>
+                    <option value="NL2">NL2</option>
+                    <option value="NL5">NL5</option>
+                    <option value="NL10">NL10</option>
+                    <option value="NL25">NL25</option>
+                </select>
+                <select id="session-filter-result" class="filter-select">
+                    <option value="">Todos os resultados</option>
+                    <option value="positive">Positivos</option>
+                    <option value="negative">Negativos</option>
+                </select>
+            </div>
+            <div class="sessions-list" id="sessions-list">
+                <p class="empty-state">Nenhuma sessão registrada ainda. <a href="#" data-page="new-session">Registre sua primeira sessão!</a></p>
+            </div>
+        </section>
+
+        <!-- ==================== WEEKLY REVIEW ==================== -->
+        <section class="page" id="page-weekly">
+            <div class="page-header">
+                <h1>Revisão Semanal</h1>
+                <p class="page-subtitle">Análise semanal do seu jogo</p>
+            </div>
+
+            <div class="weekly-selector">
+                <button class="btn btn-outline" id="prev-week">← Semana Anterior</button>
+                <span class="week-label" id="week-label">Semana Atual</span>
+                <button class="btn btn-outline" id="next-week">Próxima Semana →</button>
+            </div>
+
+            <div class="weekly-grid" id="weekly-content">
+                <!-- Volume -->
+                <div class="card">
+                    <h3 class="card-title">📊 Volume</h3>
+                    <div class="weekly-stats" id="weekly-volume">
+                        <div class="weekly-stat"><span class="ws-label">Sessões jogadas</span><span class="ws-value" id="ws-sessions">0</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Horas jogadas</span><span class="ws-value" id="ws-hours">0h</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Resultado total</span><span class="ws-value" id="ws-result">$0.00</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Buy-ins</span><span class="ws-value" id="ws-buyins">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Erros Técnicos -->
+                <div class="card">
+                    <h3 class="card-title">⚠️ Erros Técnicos</h3>
+                    <div class="weekly-stats" id="weekly-errors">
+                        <div class="weekly-stat"><span class="ws-label">Limps dados</span><span class="ws-value" id="ws-limps">0</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Calls ruins OOP</span><span class="ws-value" id="ws-calls">0</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Hero calls ruins</span><span class="ws-value" id="ws-hero">0</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Stop loss quebrado</span><span class="ws-value" id="ws-stoploss">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Tilt -->
+                <div class="card">
+                    <h3 class="card-title">😤 Tilt</h3>
+                    <div class="weekly-stats" id="weekly-tilt">
+                        <div class="weekly-stat"><span class="ws-label">Sessões com tilt</span><span class="ws-value" id="ws-tilt">0</span></div>
+                        <div class="weekly-stat"><span class="ws-label">Principal gatilho</span><span class="ws-value" id="ws-trigger">—</span></div>
+                    </div>
+                </div>
+
+                <!-- Weekly Notes -->
+                <div class="card card-wide">
+                    <h3 class="card-title">📝 Ajuste da Próxima Semana</h3>
+                    <form id="weekly-notes-form">
+                        <div class="form-grid-full">
+                            <div class="form-group">
+                                <label for="weekly-leak">Leak principal</label>
+                                <textarea id="weekly-leak" rows="2" placeholder="Qual o principal leak identificado?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="weekly-rule">Regra prioritária</label>
+                                <textarea id="weekly-rule" rows="2" placeholder="Qual regra será prioridade?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="weekly-study">Conceito a estudar</label>
+                                <textarea id="weekly-study" rows="2" placeholder="O que vai estudar esta semana?"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salvar Notas Semanais</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== BANKROLL ==================== -->
+        <section class="page" id="page-bankroll">
+            <div class="page-header">
+                <h1>Bankroll Manager</h1>
+                <p class="page-subtitle">Controle sua banca com disciplina</p>
+            </div>
+            <div class="bankroll-dashboard">
+                <div class="card bankroll-main-card">
+                    <div class="bankroll-current">
+                        <span class="bankroll-big-label">Bankroll Atual</span>
+                        <span class="bankroll-big-value" id="bankroll-current-value">$0.00</span>
+                    </div>
+                    <div class="bankroll-meta">
+                        <div class="bm-item"><span>Buy-ins disponíveis (NL2)</span><span id="bm-buyins">0</span></div>
+                        <div class="bm-item"><span>Risco de ruína</span><span id="bm-risk">—</span></div>
+                        <div class="bm-item"><span>Próximo limite</span><span id="bm-next-limit">—</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">💰 Depósito / Saque</h3>
+                    <form id="bankroll-form">
+                        <div class="form-group">
+                            <label for="br-type">Tipo</label>
+                            <select id="br-type">
+                                <option value="deposit">Depósito</option>
+                                <option value="withdraw">Saque</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="br-amount">Valor ($)</label>
+                            <input type="number" id="br-amount" step="0.01" min="0" placeholder="50.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="br-note">Nota</label>
+                            <input type="text" id="br-note" placeholder="Ex: Depósito inicial">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </form>
+                </div>
+                <div class="card card-wide">
+                    <h3 class="card-title">📜 Histórico</h3>
+                    <div class="bankroll-history" id="bankroll-history">
+                        <p class="empty-state">Nenhuma transação registrada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SETTINGS ==================== -->
+        <section class="page" id="page-settings">
+            <div class="page-header">
+                <h1>Configurações</h1>
+                <p class="page-subtitle">Ajustes e dados</p>
+            </div>
+            <div class="settings-grid">
+                <div class="card">
+                    <h3 class="card-title">📦 Dados</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-outline" id="export-data">📥 Exportar Dados (JSON)</button>
+                        <label class="btn btn-outline">
+                            📤 Importar Dados
+                            <input type="file" id="import-data" accept=".json" style="display:none">
+                        </label>
+                        <button class="btn btn-danger" id="clear-data">🗑️ Limpar Todos os Dados</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">🎯 Stop Loss</h3>
+                    <div class="form-group">
+                        <label for="stop-loss-amount">Limite de perda por sessão (buy-ins)</label>
+                        <input type="number" id="stop-loss-amount" min="1" max="20" value="3">
+                    </div>
+                    <button class="btn btn-primary" id="save-settings">Salvar</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Session Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="session-modal">
+            <button class="modal-close" id="modal-close">✕</button>
+            <div class="modal-content" id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
