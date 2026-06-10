@@ -496,12 +496,20 @@
                 <p class="page-subtitle">Ajustes e dados</p>
             </div>
             <div class="settings-grid">
+                <div class="card card-wide">
+                    <h3 class="card-title">🃏 Importar Hand History</h3>
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px">Importe arquivos .txt de Hand History do <strong>PokerStars</strong> ou <strong>GGPoker</strong>. As mãos serão parseadas e sessões criadas automaticamente.</p>
+                    <label class="btn btn-primary" style="cursor:pointer">
+                        📂 Selecionar Arquivos (.txt)
+                        <input type="file" id="import-hh" accept=".txt" multiple style="display:none">
+                    </label>
+                </div>
                 <div class="card">
                     <h3 class="card-title">📦 Dados</h3>
                     <div class="settings-actions">
                         <button class="btn btn-outline" id="export-data">📥 Exportar Dados (JSON)</button>
                         <label class="btn btn-outline">
-                            📤 Importar Dados
+                            📤 Importar Dados (JSON)
                             <input type="file" id="import-data" accept=".json" style="display:none">
                         </label>
                         <button class="btn btn-danger" id="clear-data">🗑️ Limpar Todos os Dados</button>
@@ -532,6 +540,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script src="data.js"></script>
+    <script src="parser.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
